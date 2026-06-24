@@ -9,6 +9,7 @@ interface KeyboardProps {
   onArrowLeft?: () => void;
   onArrowRight?: () => void;
   keyStates: Record<string, KeyState[]>;
+  readOnly?: boolean;
 }
 
 const KEYS = [
@@ -24,8 +25,10 @@ export function Keyboard({
   onArrowLeft,
   onArrowRight,
   keyStates,
+  readOnly = false,
 }: KeyboardProps) {
   useEffect(() => {
+    if (readOnly) return; // Don't attach native global keydown if handled elsewhere or readOnly
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey || e.altKey) return;
 
@@ -49,18 +52,21 @@ export function Keyboard({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onChar, onEnter, onBackspace, onArrowLeft, onArrowRight]);
+  }, [onChar, onEnter, onBackspace, onArrowLeft, onArrowRight, readOnly]);
 
   const handleKeyClick = (key: string) => {
+    if (readOnly) return;
     if (key === "ENTER") onEnter();
     else if (key === "BACKSPACE") onBackspace();
     else onChar(key);
   };
 
   return (
-    <div className="w-full max-w-[500px] mx-auto px-1 mt-auto pb-4 flex flex-col gap-2">
+    <div
+      className={`w-full max-w-[500px] mx-auto px-1 mt-auto pb-4 flex flex-col gap-1 sm:gap-2 ${readOnly ? "pointer-events-none opacity-80" : ""}`}
+    >
       {KEYS.map((row, i) => (
-        <div key={i} className="flex justify-center gap-1 sm:gap-2 w-full">
+        <div key={i} className="flex justify-center gap-1 w-full">
           {row.map((key) => (
             <Key
               key={key}

@@ -11,10 +11,11 @@ import { Timer } from "../../../components/Timer";
 import { StatsModal } from "../../../components/StatsModal";
 import { SettingsModal } from "../../../components/SettingsModal";
 import { useRouter } from "next/navigation";
-import { use, useState, useEffect } from "react";
+import { use, useState, useEffect, useRef } from "react";
 import Confetti from "react-confetti";
 import { useWindowSize } from "react-use";
 import { motion } from "motion/react";
+import { useIsMobile } from "../../../hooks/use-mobile";
 
 export default function GamePage({
   params,
@@ -152,6 +153,52 @@ export default function GamePage({
     }
   };
 
+  const isMobile = useIsMobile();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [inputValue, setInputValue] = useState(" "); // Keep a space so backspace is registered on mobile
+
+  // Auto focus input on mount and on click if mobile
+  useEffect(() => {
+    if (isMobile && !isFinished && !showUnicaIntro) {
+      inputRef.current?.focus();
+    }
+  }, [isMobile, isFinished, showUnicaIntro]);
+
+  const handleContainerClick = () => {
+    if (isMobile && !isFinished && !showUnicaIntro) {
+      inputRef.current?.focus();
+    }
+  };
+
+  const handleNativeInputKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if (e.key === "Enter") {
+      game.handleEnter();
+    } else if (e.key === "ArrowLeft") {
+      game.handleArrowLeft();
+    } else if (e.key === "ArrowRight") {
+      game.handleArrowRight();
+    }
+    // Backspace logic is handled in onChange for mobile reliability
+  };
+
+  const handleNativeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    if (val.length < inputValue.length) {
+      // Deletion occurred
+      game.handleBackspace();
+    } else if (val.length > inputValue.length) {
+      // Addition occurred
+      const char = val.charAt(val.length - 1).toUpperCase();
+      const normalizedKey = char === "Ç" ? "C" : char;
+      if (/^[A-Z]$/.test(normalizedKey)) {
+        game.handleChar(normalizedKey);
+      }
+    }
+    setInputValue(" "); // Always reset to a single space
+  };
+
   const isErrorFlash = isTimerEnabled && game.wrongGuessShake;
   const isTimerCritical =
     isTimerEnabled &&
@@ -160,8 +207,24 @@ export default function GamePage({
 
   return (
     <div
-      className={`min-h-screen flex flex-col bg-bg-base overflow-hidden relative ${isErrorFlash ? "error-flash-overlay" : ""} ${game.wrongGuessShake ? "animate-shake" : ""}`}
+      className={`h-[100dvh] flex flex-col bg-bg-base overflow-hidden relative ${isErrorFlash ? "error-flash-overlay" : ""} ${game.wrongGuessShake ? "animate-shake" : ""}`}
+      onClick={handleContainerClick}
     >
+      {/* Invisible input for native keyboard on mobile */}
+      <input
+        ref={inputRef}
+        type="text"
+        inputMode="text"
+        value={inputValue}
+        autoCapitalize="off"
+        autoCorrect="off"
+        autoComplete="off"
+        spellCheck={false}
+        onChange={handleNativeInputChange}
+        onKeyDown={handleNativeInputKeyDown}
+        className="absolute top-0 left-0 opacity-0 w-0 h-0 p-0 m-0 border-0 focus:ring-0 z-[-1]"
+        aria-hidden="true"
+      />
       {mode === "unica" && game.status === "won" && (
         <Confetti
           width={width}
@@ -369,7 +432,7 @@ export default function GamePage({
           />
         </div>
 
-        <div className="w-full shrink-0 z-20 bg-bg-base">
+        <div className="w-full shrink-0 z-20 bg-bg-base pb-2 sm:pb-4">
           <Keyboard
             onChar={game.handleChar}
             onBackspace={game.handleBackspace}
@@ -377,6 +440,7 @@ export default function GamePage({
             onArrowLeft={game.handleArrowLeft}
             onArrowRight={game.handleArrowRight}
             keyStates={game.keyStates}
+            readOnly={!!isMobile}
           />
         </div>
       </main>

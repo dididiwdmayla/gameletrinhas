@@ -29,18 +29,24 @@ export function Board({
   );
   const isActive = grid.status === "playing";
 
+  const boardAspectRatio = `${letras} / ${maxAttempts}`;
+
   return (
     <div
       className={clsx(
-        "w-full max-w-[320px] mx-auto rounded-lg transition-all duration-300",
+        "w-full h-full max-w-[320px] mx-auto rounded-lg transition-all duration-300 flex flex-col justify-center",
         letras === 11 ? "max-w-[100%]" : "max-w-[320px]",
-        compact ? "p-1" : "p-2 sm:p-3",
+        compact ? "p-1" : "p-1 sm:p-3",
         grid.status === "won"
           ? "ring-2 ring-accent shadow-[0_0_15px_rgba(255,77,94,0.3)] opacity-80"
           : grid.status === "lost"
             ? "opacity-60 grayscale"
             : "bg-transparent",
       )}
+      style={{
+        aspectRatio: boardAspectRatio,
+        maxHeight: "100%",
+      }}
     >
       {/* Past guesses */}
       {grid.guesses.map((guess, i) => (

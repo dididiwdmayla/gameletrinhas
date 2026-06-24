@@ -62,44 +62,46 @@ export function Cell({
 
   return (
     <div
-      className="relative aspect-square w-full"
+      className="relative flex items-center justify-center w-full h-full min-h-0 min-w-0"
       aria-label={`Letra ${letter || "vazia"}, ${ariaLabels[state]}`}
       onClick={onClick}
     >
-      <motion.div
-        className={clsx(baseClasses, stateClasses[state])}
-        initial={{ rotateX: 0, scale: 1 }}
-        animate={{
-          rotateX: isRevealing && isGuessed ? [0, 90, 0] : 0,
-          scale: isFilled && !isGuessed ? [1, 1.1, 1] : 1,
-        }}
-        transition={{
-          rotateX: {
-            delay: index * 0.12,
-            duration: 0.4,
-          },
-          scale: {
-            duration: 0.1,
-          },
-        }}
-      >
-        <span
-          className={clsx(
-            "absolute",
-            isRevealing ? "opacity-0" : "opacity-100",
-          )}
+      <div className="relative aspect-square h-full max-h-full w-full max-w-full mx-auto overflow-hidden rounded">
+        <motion.div
+          className={clsx(baseClasses, stateClasses[state], "absolute inset-0")}
+          initial={{ rotateX: 0, scale: 1 }}
+          animate={{
+            rotateX: isRevealing && isGuessed ? [0, 90, 0] : 0,
+            scale: isFilled && !isGuessed ? [1, 1.1, 1] : 1,
+          }}
+          transition={{
+            rotateX: {
+              delay: index * 0.12,
+              duration: 0.4,
+            },
+            scale: {
+              duration: 0.1,
+            },
+          }}
         >
-          {letter}
-        </span>
-        <motion.span
-          className="absolute"
-          initial={{ opacity: isGuessed && !isRevealing ? 1 : 0 }}
-          animate={{ opacity: isGuessed ? 1 : 0 }}
-          transition={{ delay: isRevealing ? index * 0.12 + 0.2 : 0 }}
-        >
-          {letter}
-        </motion.span>
-      </motion.div>
+          <span
+            className={clsx(
+              "absolute",
+              isRevealing ? "opacity-0" : "opacity-100",
+            )}
+          >
+            {letter}
+          </span>
+          <motion.span
+            className="absolute"
+            initial={{ opacity: isGuessed && !isRevealing ? 1 : 0 }}
+            animate={{ opacity: isGuessed ? 1 : 0 }}
+            transition={{ delay: isRevealing ? index * 0.12 + 0.2 : 0 }}
+          >
+            {letter}
+          </motion.span>
+        </motion.div>
+      </div>
     </div>
   );
 }

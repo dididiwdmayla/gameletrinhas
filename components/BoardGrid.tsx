@@ -24,13 +24,14 @@ export function BoardGrid({
   const count = grids.length;
 
   const layoutClasses = clsx(
-    "grid w-full h-full justify-center content-start max-h-[100%] overflow-y-auto px-2 pb-4",
+    "grid w-full h-full justify-center content-start min-h-0 px-2 pb-4",
     {
-      "gap-4 grid-cols-1 mx-auto": count === 1,
-      "gap-4 grid-cols-2 max-w-[700px] mx-auto": count === 2 || count === 4,
-      "gap-2 sm:gap-4 grid-cols-2 lg:grid-cols-3 max-w-[1000px] mx-auto":
+      "gap-2 sm:gap-4 grid-cols-1 mx-auto auto-rows-fr": count === 1,
+      "gap-2 sm:gap-4 grid-cols-2 max-w-[700px] mx-auto auto-rows-fr":
+        count === 2 || count === 4,
+      "gap-1 sm:gap-4 grid-cols-2 lg:grid-cols-3 max-w-[1000px] mx-auto auto-rows-fr":
         count === 6,
-      "gap-1 sm:gap-2 grid-cols-2 md:grid-cols-5 max-w-[1200px] mx-auto":
+      "gap-1 sm:gap-2 grid-cols-2 md:grid-cols-5 max-w-[1200px] mx-auto auto-rows-fr":
         count === 10,
     },
     letras === 11 ? "max-w-[700px]" : count === 1 ? "max-w-[360px]" : "",

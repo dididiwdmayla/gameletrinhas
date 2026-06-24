@@ -16,15 +16,20 @@ export function ModeMenu() {
   const modes = Object.keys(MODE_CONFIG) as GameMode[];
 
   return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col gap-4 p-4">
-      <div className="text-center py-8">
-        <h1 className="text-5xl sm:text-6xl font-display font-black tracking-tighter text-accent mb-2 uppercase">
+    <div className="w-full max-w-3xl mx-auto flex flex-col gap-2 sm:gap-4 p-2 sm:p-4 h-full">
+      <div className="neon-line left" />
+      <div className="neon-line right" />
+
+      <div className="text-center py-4 sm:py-8 flex flex-col items-center justify-center shrink-0">
+        <h1 className="text-4xl sm:text-6xl font-display font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-accent to-accent/50 mb-1 sm:mb-2 uppercase drop-shadow-[0_0_15px_var(--color-accent)]">
           Letrinha
         </h1>
-        <p className="text-text-muted">Adivinhe a palavra</p>
+        <p className="text-text-muted text-xs sm:text-base font-bold tracking-wider uppercase">
+          Adivinhe a palavra
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4 flex-1 min-h-0 items-center justify-center auto-rows-fr">
         {modes.map((mode) => {
           const config = MODE_CONFIG[mode];
           const isDaily = mode === "diario";
@@ -32,49 +37,58 @@ export function ModeMenu() {
 
           const CardContent = (
             <div
-              className={`p-6 rounded-xl border-2 transition-all h-full
-              ${isLocked ? "border-text-muted/30 bg-bg-base opacity-50" : "border-bg-surface bg-bg-surface hover:border-accent group"}
+              className={`p-3 sm:p-5 rounded-xl sm:rounded-2xl border-2 transition-all h-full flex flex-col justify-center relative overflow-hidden shadow-lg
+              ${isLocked ? "border-text-muted/20 bg-bg-base/50 opacity-60" : "border-bg-surface bg-bg-surface/80 hover:border-accent hover:shadow-[0_0_20px_var(--color-accent)] group"}
               ${mode === "unica" ? "border-dashed border-accent hover:bg-accent/10" : ""}`}
             >
-              <div className="flex justify-between items-start mb-2">
-                <h2 className="text-2xl font-display font-bold group-hover:text-accent transition-colors">
-                  {config.label}
-                </h2>
+              {mode === "unica" && (
+                <div className="absolute inset-0 bg-accent/5 pointer-events-none" />
+              )}
+              <div className="flex flex-col gap-1 z-10 relative">
+                <div className="flex justify-between items-center w-full">
+                  <h2 className="text-lg sm:text-2xl font-display font-bold group-hover:text-accent transition-colors">
+                    {config.label}
+                  </h2>
+                </div>
                 {isDaily && !isLocked && (
-                  <span className="bg-correct text-text-primary text-xs font-bold px-2 py-1 rounded">
-                    DISPONÍVEL
+                  <span className="bg-correct/20 text-correct text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded w-fit border border-correct/30">
+                    NOVA
                   </span>
                 )}
                 {isLocked && (
-                  <span className="bg-text-muted text-text-primary text-xs font-bold px-2 py-1 rounded">
-                    JOGADO HOJE
+                  <span className="bg-text-muted/20 text-text-muted text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded w-fit border border-text-muted/30">
+                    JOGADO
                   </span>
                 )}
+                <p className="text-text-muted text-[10px] sm:text-sm mt-1 sm:mt-2 leading-tight">
+                  {isDaily
+                    ? "Uma palavra única diária."
+                    : mode === "onze"
+                      ? "11 letras. 7 chances."
+                      : mode === "dezena"
+                        ? "10 palavras. 16 tentativas."
+                        : mode === "unica"
+                          ? "1 palavra. 1 chance."
+                          : `${config.grids} grade${config.grids > 1 ? "s" : ""}, ${config.maxAttempts} tentativas.`}
+                </p>
               </div>
-              <p className="text-text-muted text-sm relative z-10">
-                {isDaily
-                  ? "Uma palavra única por dia para todos."
-                  : mode === "onze"
-                    ? "Uma palavra. Onze letras. Sete chances."
-                    : mode === "dezena"
-                      ? "10 palavras, 16 tentativas. Para os corajosos."
-                      : mode === "unica"
-                        ? "Uma palavra. Uma chance. Boa sorte."
-                        : `${config.grids} grade${config.grids > 1 ? "s" : ""}, ${config.maxAttempts} tentativas.`}
-              </p>
             </div>
           );
 
           if (isLocked) {
             return (
-              <div key={mode} className="cursor-not-allowed">
+              <div key={mode} className="cursor-not-allowed h-full">
                 {CardContent}
               </div>
             );
           }
 
           return (
-            <Link key={mode} href={`/jogar/${mode}`} className="block">
+            <Link
+              key={mode}
+              href={`/jogar/${mode}`}
+              className="block h-full outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-xl sm:rounded-2xl"
+            >
               {CardContent}
             </Link>
           );

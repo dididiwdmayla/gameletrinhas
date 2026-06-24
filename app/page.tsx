@@ -10,8 +10,8 @@ export default function Home() {
   const [showSettings, setShowSettings] = useState(false);
 
   return (
-    <main className="min-h-screen flex flex-col items-center relative z-10">
-      <header className="w-full flex justify-end p-4 gap-2">
+    <main className="h-[100dvh] flex flex-col items-center relative z-10 overflow-hidden">
+      <header className="w-full flex justify-end p-2 sm:p-4 gap-2 shrink-0 relative z-20">
         <button
           onClick={() => setShowSettings(true)}
           className="text-text-muted hover:text-text-primary p-2 transition-colors flex items-center gap-2"
@@ -57,7 +57,7 @@ export default function Home() {
         </button>
       </header>
 
-      <div className="flex-1 w-full pb-12">
+      <div className="flex-1 w-full min-h-0 pb-2 sm:pb-8">
         <ModeMenu />
       </div>
 

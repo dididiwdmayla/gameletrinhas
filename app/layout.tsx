@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body
-        className={`${spaceGrotesk.variable} ${inter.variable} font-body antialiased animated-bg min-h-screen`}
+        className={`${spaceGrotesk.variable} ${inter.variable} font-body antialiased animated-bg h-[100dvh] overflow-hidden overscroll-none`}
         suppressHydrationWarning
       >
         {children}
