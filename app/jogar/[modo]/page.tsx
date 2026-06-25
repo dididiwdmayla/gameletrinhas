@@ -135,12 +135,23 @@ export default function GamePage({
   }, [modoStr, router]);
 
   const { width, height } = useWindowSize();
+  const isFinished = game.status === "won" || game.status === "lost";
+
+  const isMobile = useIsMobile();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [inputValue, setInputValue] = useState(" "); // Keep a space so backspace is registered on mobile
+
+  // Auto focus input on mount and on click if mobile
+  useEffect(() => {
+    if (game.isLoaded && isMobile && !isFinished && !showUnicaIntro) {
+      inputRef.current?.focus();
+    }
+  }, [game.isLoaded, isMobile, isFinished, showUnicaIntro]);
 
   if (!game.isLoaded) {
     return <div className="min-h-screen bg-bg-base" />;
   }
 
-  const isFinished = game.status === "won" || game.status === "lost";
   const headerHeightClass = "h-14 sm:h-16";
 
   const hasStartedTyping =
@@ -152,17 +163,6 @@ export default function GamePage({
       setIsTimerEnabled(!isTimerEnabled);
     }
   };
-
-  const isMobile = useIsMobile();
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [inputValue, setInputValue] = useState(" "); // Keep a space so backspace is registered on mobile
-
-  // Auto focus input on mount and on click if mobile
-  useEffect(() => {
-    if (isMobile && !isFinished && !showUnicaIntro) {
-      inputRef.current?.focus();
-    }
-  }, [isMobile, isFinished, showUnicaIntro]);
 
   const handleContainerClick = () => {
     if (isMobile && !isFinished && !showUnicaIntro) {
