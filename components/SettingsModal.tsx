@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import {
   ThemeName,
   getUnlockedThemes,
@@ -18,6 +18,7 @@ const ALL_THEMES: ThemeName[] = ["default", "dourado", "gasolina"];
 export function SettingsModal({ onClose }: SettingsModalProps) {
   const [unlocked, setUnlocked] = useState<ThemeName[]>(["default"]);
   const [current, setCurrent] = useState<ThemeName>("default");
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     setTimeout(() => {
@@ -38,11 +39,28 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
     gasolina: "Verde-Gasolina",
   };
 
+  const variants = shouldReduceMotion ? {
+    hidden: { opacity: 0 },
+    enter: { opacity: 1 },
+    exit: { opacity: 0 }
+  } : {
+    hidden: { opacity: 0, scale: 0.95 },
+    enter: { opacity: 1, scale: 1 },
+    exit: { opacity: 0, scale: 0.95 }
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bg-base/80 backdrop-blur-sm">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bg-base/80 backdrop-blur-sm"
+    >
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
+        variants={variants}
+        initial="hidden"
+        animate="enter"
+        exit="exit"
         className="bg-bg-surface p-6 sm:p-8 rounded-xl w-full max-w-md border border-absent shadow-2xl"
       >
         <div className="flex justify-between items-center mb-6">
@@ -116,6 +134,6 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
           FECHAR
         </button>
       </motion.div>
-    </div>
+    </motion.div>
   );
 }

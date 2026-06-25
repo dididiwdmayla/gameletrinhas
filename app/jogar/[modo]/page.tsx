@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 import { use, useState, useEffect, useRef } from "react";
 import Confetti from "react-confetti";
 import { useWindowSize } from "react-use";
-import { motion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useIsMobile } from "../../../hooks/use-mobile";
 
 export default function GamePage({
@@ -25,6 +25,7 @@ export default function GamePage({
   const router = useRouter();
   const unwrappedParams = use(params);
   const modoStr = unwrappedParams.modo;
+  const shouldReduceMotion = useReducedMotion();
 
   const mode = (
     Object.keys(MODE_CONFIG).includes(modoStr as GameMode) ? modoStr : "solo"
@@ -141,12 +142,11 @@ export default function GamePage({
   const inputRef = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState(" "); // Keep a space so backspace is registered on mobile
 
-  // Auto focus input on mount and on click if mobile
-  useEffect(() => {
-    if (game.isLoaded && isMobile && !isFinished && !showUnicaIntro) {
+  const handleContainerClick = () => {
+    if (isMobile && !isFinished && !showUnicaIntro) {
       inputRef.current?.focus();
     }
-  }, [game.isLoaded, isMobile, isFinished, showUnicaIntro]);
+  };
 
   if (!game.isLoaded) {
     return <div className="min-h-screen bg-bg-base" />;
@@ -161,12 +161,6 @@ export default function GamePage({
   const toggleTimer = () => {
     if (!hasStartedTyping) {
       setIsTimerEnabled(!isTimerEnabled);
-    }
-  };
-
-  const handleContainerClick = () => {
-    if (isMobile && !isFinished && !showUnicaIntro) {
-      inputRef.current?.focus();
     }
   };
 
@@ -205,10 +199,19 @@ export default function GamePage({
     countdown.remainingMs > 0 &&
     countdown.remainingMs <= 10000;
 
+  const modalVariants = shouldReduceMotion ? {
+    hidden: { opacity: 0 },
+    enter: { opacity: 1 },
+    exit: { opacity: 0 }
+  } : {
+    hidden: { opacity: 0, scale: 0.95 },
+    enter: { opacity: 1, scale: 1 },
+    exit: { opacity: 0, scale: 0.95 }
+  };
+
   return (
     <div
       className={`h-[100dvh] flex flex-col bg-bg-base overflow-hidden relative ${isErrorFlash ? "error-flash-overlay" : ""} ${game.wrongGuessShake ? "animate-shake" : ""}`}
-      onClick={handleContainerClick}
     >
       {/* Invisible input for native keyboard on mobile */}
       <input
@@ -235,49 +238,62 @@ export default function GamePage({
         />
       )}
 
-      {showUnicaIntro && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-bg-base/90 p-4">
-          <div className="bg-bg-surface p-8 rounded-xl max-w-sm text-center border-2 border-accent">
-            <h2 className="text-3xl font-display font-black text-accent mb-4">
-              ÚNICA
-            </h2>
-            <p className="text-text-primary mb-6">
-              Ninguém acerta de primeira. Mas e se hoje for você? É 1 tentativa.
-              1 palavra de 5 letras sorteada do zero, sem dicas prévias.
-            </p>
-            {unicaWins > 0 && (
-              <p className="text-correct font-bold mb-6">
-                Você já fez o impossível {unicaWins} vez(es)!
-              </p>
-            )}
-            <div className="flex items-center justify-center gap-2 mb-6 text-sm text-text-muted">
-              <input
-                type="checkbox"
-                id="hideWarningCheckbox"
-                checked={hideUnicaWarning}
-                onChange={(e) => {
-                  const checked = e.target.checked;
-                  setHideUnicaWarning(checked);
-                  localStorage.setItem(
-                    "letrinha:unica:hideWarning",
-                    checked ? "true" : "false",
-                  );
-                }}
-                className="w-4 h-4 accent-accent"
-              />
-              <label htmlFor="hideWarningCheckbox">
-                Não mostrar este aviso novamente
-              </label>
-            </div>
-            <button
-              onClick={() => setShowUnicaIntro(false)}
-              className="bg-accent text-bg-base font-bold py-2 px-6 rounded hover:opacity-90 transition-opacity"
+      <AnimatePresence>
+        {showUnicaIntro && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-50 flex items-center justify-center bg-bg-base/90 p-4 backdrop-blur-sm"
+          >
+            <motion.div
+              variants={modalVariants}
+              initial="hidden"
+              animate="enter"
+              exit="exit"
+              className="bg-bg-surface p-8 rounded-xl max-w-sm text-center border-2 border-accent"
             >
-              ACEITO O DESAFIO
-            </button>
-          </div>
-        </div>
-      )}
+              <h2 className="text-3xl font-display font-black text-accent mb-4">
+                ÚNICA
+              </h2>
+              <p className="text-text-primary mb-6">
+                Ninguém acerta de primeira. Mas e se hoje for você? É 1 tentativa.
+                1 palavra de 5 letras sorteada do zero, sem dicas prévias.
+              </p>
+              {unicaWins > 0 && (
+                <p className="text-correct font-bold mb-6">
+                  Você já fez o impossível {unicaWins} vez(es)!
+                </p>
+              )}
+              <div className="flex items-center justify-center gap-2 mb-6 text-sm text-text-muted">
+                <input
+                  type="checkbox"
+                  id="hideWarningCheckbox"
+                  checked={hideUnicaWarning}
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    setHideUnicaWarning(checked);
+                    localStorage.setItem(
+                      "letrinha:unica:hideWarning",
+                      checked ? "true" : "false",
+                    );
+                  }}
+                  className="w-4 h-4 accent-accent"
+                />
+                <label htmlFor="hideWarningCheckbox">
+                  Não mostrar este aviso novamente
+                </label>
+              </div>
+              <button
+                onClick={() => setShowUnicaIntro(false)}
+                className="bg-accent text-bg-base font-bold py-2 px-6 rounded hover:opacity-90 transition-opacity"
+              >
+                ACEITO O DESAFIO
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <header
         className={`w-full ${headerHeightClass} border-b border-absent flex items-center px-4 justify-between shrink-0 relative z-10`}
@@ -383,49 +399,63 @@ export default function GamePage({
         </div>
       </header>
 
-      {showRestartConfirm && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-bg-base/80 p-4 backdrop-blur-sm">
+      <AnimatePresence>
+        {showRestartConfirm && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-bg-surface p-6 rounded-xl max-w-sm w-full border border-absent shadow-2xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-50 flex items-center justify-center bg-bg-base/80 p-4 backdrop-blur-sm"
           >
-            <h2 className="text-xl font-bold mb-3">Reiniciar Partida?</h2>
-            <p className="text-text-muted mb-6">
-              A palavra atual será trocada por uma nova e o progresso da partida
-              será perdido. Tem certeza?
-            </p>
-            <div className="flex gap-3 justify-end">
-              <button
-                onClick={() => setShowRestartConfirm(false)}
-                className="px-4 py-2 text-text-muted hover:text-text-primary transition-colors font-bold"
-              >
-                CANCELAR
-              </button>
-              <button
-                onClick={() => {
-                  setShowRestartConfirm(false);
-                  game.restartGame();
-                  if (isTimerEnabled) countdown.reset();
-                }}
-                className="px-4 py-2 bg-accent text-bg-base rounded font-bold hover:opacity-90 transition-opacity"
-              >
-                REINICIAR
-              </button>
-            </div>
+            <motion.div
+              variants={modalVariants}
+              initial="hidden"
+              animate="enter"
+              exit="exit"
+              className="bg-bg-surface p-6 rounded-xl max-w-sm w-full border border-absent shadow-2xl"
+            >
+              <h2 className="text-xl font-bold mb-3">Reiniciar Partida?</h2>
+              <p className="text-text-muted mb-6">
+                A palavra atual será trocada por uma nova e o progresso da partida
+                será perdido. Tem certeza?
+              </p>
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={() => setShowRestartConfirm(false)}
+                  className="px-4 py-2 text-text-muted hover:text-text-primary transition-colors font-bold"
+                >
+                  CANCELAR
+                </button>
+                <button
+                  onClick={() => {
+                    setShowRestartConfirm(false);
+                    game.restartGame();
+                    if (isTimerEnabled) countdown.reset();
+                  }}
+                  className="px-4 py-2 bg-accent text-bg-base rounded font-bold hover:opacity-90 transition-opacity"
+                >
+                  REINICIAR
+                </button>
+              </div>
+            </motion.div>
           </motion.div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
 
       <Toast message={game.toastMsg} />
 
       <main className="flex-1 flex flex-col items-center w-full min-h-0 relative z-10">
-        <div className="flex-1 w-full flex flex-col pt-4 overflow-hidden">
+        <div
+          className="flex-1 w-full flex flex-col pt-4 overflow-hidden"
+        >
           <BoardGrid
             grids={game.grids}
             currentAttemptChars={game.currentAttemptChars}
             cursorIndex={game.cursorIndex}
-            onCellClick={game.handleCellClick}
+            onCellClick={(idx) => {
+              game.handleCellClick(idx);
+              handleContainerClick();
+            }}
             maxAttempts={config.maxAttempts}
             invalidShake={game.invalidShake}
             letras={config.letras}
@@ -440,58 +470,77 @@ export default function GamePage({
             onArrowLeft={game.handleArrowLeft}
             onArrowRight={game.handleArrowRight}
             keyStates={game.keyStates}
-            readOnly={!!isMobile}
+            readOnly={false}
           />
         </div>
       </main>
 
-      {isFinished && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-bg-base/80 backdrop-blur-sm">
-          {mode === "unica" ? (
-            <div className="bg-bg-surface p-8 rounded-xl max-w-sm text-center border-2 border-text-muted">
-              <h2
-                className={`text-4xl font-display font-black mb-4 ${game.status === "won" ? "text-correct" : "text-accent"}`}
+      <AnimatePresence>
+        {isFinished && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-bg-base/80 backdrop-blur-sm"
+          >
+            {mode === "unica" ? (
+              <motion.div
+                variants={modalVariants}
+                initial="hidden"
+                animate="enter"
+                exit="exit"
+                className="bg-bg-surface p-8 rounded-xl max-w-sm text-center border-2 border-text-muted"
               >
-                {game.status === "won"
-                  ? "VOCÊ ACERTOU. ISSO NÃO ERA PRA ACONTECER."
-                  : "Era essa. Claro que era."}
-              </h2>
-              <div className="flex justify-center gap-2 mb-8">
-                {game.grids[0].answer.split("").map((char, i) => (
-                  <span
-                    key={i}
-                    className="bg-bg-base w-10 h-10 flex items-center justify-center rounded font-bold text-xl uppercase border border-absent"
-                  >
-                    {char}
-                  </span>
-                ))}
-              </div>
-              <button
-                onClick={() => {
-                  setShowUnicaIntro(true);
-                  game.restartGame();
-                }}
-                className="bg-text-primary text-bg-base font-bold py-3 px-8 rounded hover:opacity-90 transition-opacity"
-              >
-                TENTAR OUTRA
-              </button>
-            </div>
-          ) : (
-            <ResultBanner
-              status={game.status as "won" | "lost"}
-              mode={mode}
-              score={0}
-              answers={game.grids.map((g) => g.answer)}
-              onPlayAgain={game.restartGame}
-            />
-          )}
-        </div>
-      )}
+                <h2
+                  className={`text-4xl font-display font-black mb-4 ${game.status === "won" ? "text-correct" : "text-accent"}`}
+                >
+                  {game.status === "won"
+                    ? "VOCÊ ACERTOU. ISSO NÃO ERA PRA ACONTECER."
+                    : "Era essa. Claro que era."}
+                </h2>
+                <div className="flex justify-center gap-2 mb-8">
+                  {game.grids[0].answer.split("").map((char, i) => (
+                    <span
+                      key={i}
+                      className="bg-bg-base w-10 h-10 flex items-center justify-center rounded font-bold text-xl uppercase border border-absent"
+                    >
+                      {char}
+                    </span>
+                  ))}
+                </div>
+                <button
+                  onClick={() => {
+                    if (!hideUnicaWarning) {
+                      setShowUnicaIntro(true);
+                    }
+                    game.restartGame();
+                  }}
+                  className="bg-text-primary text-bg-base font-bold py-3 px-8 rounded hover:opacity-90 transition-opacity"
+                >
+                  TENTAR OUTRA
+                </button>
+              </motion.div>
+            ) : (
+              <ResultBanner
+                status={game.status as "won" | "lost"}
+                mode={mode}
+                score={0}
+                answers={game.grids.map((g) => g.answer)}
+                onPlayAgain={game.restartGame}
+              />
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {showStats && (
-        <StatsModal onClose={() => setShowStats(false)} initialMode={mode} />
-      )}
-      {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
+      <AnimatePresence>
+        {showStats && (
+          <StatsModal onClose={() => setShowStats(false)} initialMode={mode} />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
+      </AnimatePresence>
     </div>
   );
 }

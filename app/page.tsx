@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ModeMenu } from "../components/ModeMenu";
 import { StatsModal } from "../components/StatsModal";
 import { SettingsModal } from "../components/SettingsModal";
+import { AnimatePresence } from "motion/react";
 
 export default function Home() {
   const [showStats, setShowStats] = useState(false);
@@ -61,8 +62,12 @@ export default function Home() {
         <ModeMenu />
       </div>
 
-      {showStats && <StatsModal onClose={() => setShowStats(false)} />}
-      {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
+      <AnimatePresence>
+        {showStats && <StatsModal onClose={() => setShowStats(false)} />}
+      </AnimatePresence>
+      <AnimatePresence>
+        {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
+      </AnimatePresence>
     </main>
   );
 }
