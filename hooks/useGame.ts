@@ -15,6 +15,8 @@ import {
   saveStats,
   loadStats,
 } from "../lib/storage";
+import { ANSWERS_11 } from "../lib/words11";
+import { isValidGuess11 } from "../lib/dictionary11";
 
 export function useGame(mode: GameMode) {
   const config = MODE_CONFIG[mode];
@@ -43,7 +45,7 @@ export function useGame(mode: GameMode) {
         return [ANSWERS[idx]];
       }
 
-      const sourceAnswers = ANSWERS;
+      const sourceAnswers = mode === "onze" ? ANSWERS_11 : ANSWERS;
 
       if (mode === "unica") {
         const randomIdx = Math.floor(Math.random() * sourceAnswers.length);
@@ -260,7 +262,7 @@ export function useGame(mode: GameMode) {
       return;
     }
 
-    const isValid = isValidGuess(currentGuess);
+    const isValid = mode === "onze" ? isValidGuess11(currentGuess) : isValidGuess(currentGuess);
 
     if (!isValid) {
       showToast("Palavra não encontrada");

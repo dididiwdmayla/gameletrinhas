@@ -13,6 +13,7 @@ export type GameMode =
   | "dueto"
   | "quarteto"
   | "sextuplo"
+  | "onze"
   | "unica"
   | "diario";
 export type GameStatus = "playing" | "won" | "lost";
@@ -55,6 +56,13 @@ export const MODE_CONFIG: Record<GameMode, ModeConfig> = {
     label: "Sêxtuplo",
     infinite: false,
     letras: 5,
+  },
+  onze: {
+    grids: 1,
+    maxAttempts: 7,
+    label: "Onze",
+    infinite: false,
+    letras: 11,
   },
   unica: {
     grids: 1,

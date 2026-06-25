@@ -16,16 +16,17 @@ export function normalize(word: string): string {
 export function evaluateGuess(guess: string, answer: string): LetterState[] {
   const normGuess = normalize(guess);
   const normAnswer = normalize(answer);
+  const len = normAnswer.length;
 
-  if (normGuess.length !== 5 || normAnswer.length !== 5) {
-    return Array(5).fill("empty");
+  if (normGuess.length !== len) {
+    return Array(len).fill("empty");
   }
 
-  const result: LetterState[] = Array(5).fill("absent");
+  const result: LetterState[] = Array(len).fill("absent");
   const answerLetterCount: Record<string, number> = {};
 
   // Pass 1: Mark correct letters
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < len; i++) {
     const char = normAnswer[i];
     if (normGuess[i] === char) {
       result[i] = "correct";
@@ -35,7 +36,7 @@ export function evaluateGuess(guess: string, answer: string): LetterState[] {
   }
 
   // Pass 2: Mark present letters
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < len; i++) {
     if (result[i] === "correct") continue;
 
     const char = normGuess[i];
@@ -71,8 +72,9 @@ export function aggregateKeyStates(
     for (let guessIdx = 0; guessIdx < grid.guesses.length; guessIdx++) {
       const guess = grid.guesses[guessIdx];
       const evals = grid.evaluations[guessIdx];
+      const len = guess.length;
 
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < len; i++) {
         const char = guess[i];
         const currentEval = evals[i];
 
