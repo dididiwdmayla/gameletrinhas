@@ -4,7 +4,8 @@ import { useState } from "react";
 import { ModeMenu } from "../components/ModeMenu";
 import { StatsModal } from "../components/StatsModal";
 import { SettingsModal } from "../components/SettingsModal";
-import { AnimatePresence } from "motion/react";
+
+import { AnimatePresence } from "framer-motion";
 
 export default function Home() {
   const [showStats, setShowStats] = useState(false);

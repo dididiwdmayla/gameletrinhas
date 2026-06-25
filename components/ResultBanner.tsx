@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { GameMode } from "../lib/types";
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
 
 interface ResultBannerProps {
   status: "won" | "lost";
@@ -18,7 +18,6 @@ export function ResultBanner({
   onPlayAgain,
 }: ResultBannerProps) {
   const [nextDailyTime, setNextDailyTime] = useState("");
-  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     if (mode === "diario") {
@@ -45,22 +44,10 @@ export function ResultBanner({
     }
   }, [mode]);
 
-  const variants = shouldReduceMotion ? {
-    hidden: { opacity: 0 },
-    enter: { opacity: 1 },
-    exit: { opacity: 0 }
-  } : {
-    hidden: { opacity: 0, y: 50 },
-    enter: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: 50 }
-  };
-
   return (
     <motion.div
-      variants={variants}
-      initial="hidden"
-      animate="enter"
-      exit="exit"
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
       className="fixed bottom-0 left-0 right-0 p-4 z-40 flex justify-center pb-24 sm:pb-8 pointer-events-none"
     >
       <div className="bg-bg-surface border-2 border-accent p-6 rounded-xl shadow-xl flex flex-col items-center gap-4 pointer-events-auto max-w-sm w-full">

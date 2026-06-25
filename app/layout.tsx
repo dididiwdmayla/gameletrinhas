@@ -20,6 +20,8 @@ const inter = Inter({
   variable: "--font-body",
 });
 
+import { PageTransition } from "./PageTransition";
+
 export const metadata: Metadata = {
   title: "Letrinha",
   description: "Jogo de adivinhação de palavras com 6 modos",
@@ -37,7 +39,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <div className="vignette" />
-        {children}
+        <PageTransition>{children}</PageTransition>
         <SparksEffect />
       </body>
     </html>

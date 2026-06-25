@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { GameMode, MODE_CONFIG } from "../lib/types";
 import { loadStats } from "../lib/storage";
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "framer-motion";
 
 interface StatsModalProps {
   onClose: () => void;
@@ -11,7 +11,6 @@ interface StatsModalProps {
 export function StatsModal({ onClose, initialMode = "solo" }: StatsModalProps) {
   const [selectedMode, setSelectedMode] = useState<GameMode>(initialMode);
   const stats = loadStats(selectedMode);
-  const shouldReduceMotion = useReducedMotion();
 
   const winRate =
     stats.played > 0 ? Math.round((stats.wins / stats.played) * 100) : 0;
@@ -21,28 +20,18 @@ export function StatsModal({ onClose, initialMode = "solo" }: StatsModalProps) {
   const maxAttempts = MODE_CONFIG[selectedMode].maxAttempts;
   const arrAttempts = Array.from({ length: maxAttempts }, (_, i) => i + 1);
 
-  const variants = shouldReduceMotion ? {
-    hidden: { opacity: 0 },
-    enter: { opacity: 1 },
-    exit: { opacity: 0 }
-  } : {
-    hidden: { opacity: 0, scale: 0.95 },
-    enter: { opacity: 1, scale: 1 },
-    exit: { opacity: 0, scale: 0.95 }
-  };
-
   return (
-    <motion.div
+    <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-bg-base/80 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+      className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 backdrop-blur-sm"
     >
-      <motion.div
-        variants={variants}
-        initial="hidden"
-        animate="enter"
-        exit="exit"
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.2 }}
         className="bg-bg-surface border border-absent shadow-2xl rounded-xl p-6 max-w-sm w-full relative"
       >
         <button

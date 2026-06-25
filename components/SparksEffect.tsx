@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Ripple {
   id: number;
@@ -15,7 +15,6 @@ export function SparksEffect() {
 
   useEffect(() => {
     const mediaQuery = window.matchMedia?.("(prefers-reduced-motion: reduce)");
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setReducedMotion(mediaQuery?.matches ?? false);
 
     const listener = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
@@ -30,13 +29,11 @@ export function SparksEffect() {
     let downX = 0;
     let downY = 0;
     let isDown = false;
-    let downTime = 0;
 
     const handlePointerDown = (e: PointerEvent) => {
       downX = e.clientX;
       downY = e.clientY;
       isDown = true;
-      downTime = Date.now();
     };
 
     const handlePointerUp = (e: PointerEvent) => {
@@ -46,11 +43,9 @@ export function SparksEffect() {
       const dx = e.clientX - downX;
       const dy = e.clientY - downY;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      const timeElapsed = Date.now() - downTime;
 
-      // Only on tap (not drag) and short time
-      if (dist < 8 && timeElapsed < 500) {
-        const newRipple: Ripple = {
+      if (dist < 8) {
+        const newRipple = {
           id: rippleIdCounter++,
           x: e.clientX,
           y: e.clientY,
@@ -60,7 +55,7 @@ export function SparksEffect() {
 
         setTimeout(() => {
           setRipples((prev) => prev.filter((r) => r.id !== newRipple.id));
-        }, 600);
+        }, 1000); 
       }
     };
 
@@ -83,22 +78,23 @@ export function SparksEffect() {
             initial={{
               x: ripple.x - 30,
               y: ripple.y - 30,
-              opacity: 0.6,
+              opacity: 0.8,
               scale: 0.2,
             }}
             animate={{
               opacity: 0,
-              scale: 2,
+              scale: 2.5,
             }}
+            exit={{ opacity: 0 }}
             transition={{
-              duration: 0.5,
+              duration: 0.6,
               ease: "easeOut",
             }}
-            className="absolute rounded-full border border-accent bg-accent/20"
+            className="absolute rounded-full border-2 border-accent shadow-[0_0_15px_var(--color-accent-glow)] bg-accent/10"
             style={{
               width: 60,
               height: 60,
-              boxShadow: "0 0 15px var(--color-accent)",
+              filter: "blur(2px)",
             }}
           />
         ))}

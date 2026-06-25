@@ -31,11 +31,6 @@ const MODE_ICONS: Record<GameMode, React.ReactNode> = {
       <div className="w-2 h-2 bg-accent/20 border border-accent rounded-sm" />
     </div>
   ),
-  dezena: (
-    <div className="flex items-center text-accent font-bold text-xs tracking-tighter">
-      10
-    </div>
-  ),
   unica: (
     <div className="w-4 h-4 rounded-full border-2 border-accent flex items-center justify-center animate-pulse shadow-[0_0_10px_var(--color-accent)]">
       <div className="w-1.5 h-1.5 bg-accent rounded-full" />
@@ -131,11 +126,9 @@ export function ModeMenu() {
                 <p className="text-text-muted text-[10px] sm:text-sm mt-1 leading-tight">
                   {isDaily
                     ? "Uma palavra única diária."
-                    : mode === "dezena"
-                      ? "10 palavras. 16 tentativas."
-                      : mode === "unica"
-                        ? "1 palavra. 1 chance."
-                        : `${config.grids} grade${config.grids > 1 ? "s" : ""}, ${config.maxAttempts} tentativas.`}
+                    : mode === "unica"
+                      ? "1 palavra. 1 chance."
+                      : `${config.grids} grade${config.grids > 1 ? "s" : ""}, ${config.maxAttempts} tentativas.`}
                 </p>
               </div>
             </div>

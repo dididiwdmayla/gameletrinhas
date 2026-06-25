@@ -337,10 +337,7 @@ export function useGame(mode: GameMode) {
     initGame(true);
   };
 
-  const keyStates = aggregateKeyStates(
-    grids,
-    mode === "dezena",
-  );
+  const keyStates = aggregateKeyStates(grids, false);
 
   return {
     grids,
