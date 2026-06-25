@@ -8,6 +8,7 @@ interface CellProps {
   index: number;
   isRevealing: boolean;
   isCursor?: boolean;
+  isVictory?: boolean;
   onClick?: () => void;
   compact?: boolean;
   letras?: number;
@@ -19,6 +20,7 @@ export function Cell({
   index,
   isRevealing,
   isCursor,
+  isVictory,
   onClick,
   compact,
   letras = 5,
@@ -30,7 +32,7 @@ export function Cell({
   if (letras === 11) textSizeClass = "text-sm sm:text-lg"; // smaller font for 11 letters
 
   const baseClasses = clsx(
-    "flex items-center justify-center w-full h-full font-display font-bold rounded capitalize uppercase transition-colors duration-150 select-none",
+    "flex items-center justify-center w-full h-full font-mono font-bold rounded capitalize uppercase transition-colors duration-150 select-none",
     onClick ? "cursor-pointer" : "cursor-default",
     textSizeClass,
     isCursor ? "cursor-glow" : "",
@@ -41,13 +43,16 @@ export function Cell({
     empty: clsx(
       "border-2",
       isFilled
-        ? "border-text-muted text-text-primary"
-        : "border-[#565758] text-transparent",
+        ? "border-text-muted/50 text-text-primary"
+        : "border-[#3A3A3C]/50 text-transparent",
     ),
-    tabbed: "border-2 border-text-muted text-text-primary", // same as empty filled
-    correct: "bg-correct text-text-primary border-2 border-absent",
-    present: "bg-present text-text-primary border-2 border-absent",
-    absent: "bg-absent text-text-primary border-2 border-absent",
+    tabbed: "border-2 border-text-muted/50 text-text-primary", // same as empty filled
+    correct:
+      "bg-correct text-text-primary border-2 border-transparent shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]",
+    present:
+      "bg-present text-text-primary border-2 border-transparent shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]",
+    absent:
+      "bg-absent text-text-primary border-2 border-transparent shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]",
   };
 
   const isGuessed = state !== "empty" && state !== "tabbed";
@@ -66,13 +71,21 @@ export function Cell({
       aria-label={`Letra ${letter || "vazia"}, ${ariaLabels[state]}`}
       onClick={onClick}
     >
+      {isCursor && <div className="cursor-aura" />}
       <div className="relative aspect-square h-full max-h-full w-full max-w-full mx-auto overflow-hidden rounded">
         <motion.div
-          className={clsx(baseClasses, stateClasses[state], "absolute inset-0")}
-          initial={{ rotateX: 0, scale: 1 }}
+          className={clsx(
+            baseClasses,
+            stateClasses[state],
+            "absolute inset-0",
+            isVictory && !isRevealing ? "victory-pulse" : "",
+          )}
+          style={{ animationDelay: `${index * 0.1}s` }}
+          initial={{ rotateX: 0, scale: 1, opacity: 1 }}
           animate={{
             rotateX: isRevealing && isGuessed ? [0, 90, 0] : 0,
-            scale: isFilled && !isGuessed ? [1, 1.1, 1] : 1,
+            scale: isFilled && !isGuessed ? [0.8, 1] : 1,
+            opacity: isFilled && !isGuessed ? [0.5, 1] : 1,
           }}
           transition={{
             rotateX: {
@@ -80,6 +93,11 @@ export function Cell({
               duration: 0.4,
             },
             scale: {
+              type: "spring",
+              stiffness: 400,
+              damping: 15,
+            },
+            opacity: {
               duration: 0.1,
             },
           }}

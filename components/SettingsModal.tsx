@@ -19,10 +19,11 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
   const [unlocked, setUnlocked] = useState<ThemeName[]>(["default"]);
   const [current, setCurrent] = useState<ThemeName>("default");
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
-    setUnlocked(getUnlockedThemes());
-    setCurrent(getCurrentTheme());
+    setTimeout(() => {
+      setUnlocked(getUnlockedThemes());
+      setCurrent(getCurrentTheme());
+    }, 0);
   }, []);
 
   const handleSelectTheme = (t: ThemeName) => {

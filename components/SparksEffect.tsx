@@ -30,33 +30,55 @@ export function SparksEffect() {
     if (reducedMotion) return;
 
     let sparkIdCounter = 0;
+    let downX = 0;
+    let downY = 0;
+    let isDown = false;
 
     const handlePointerDown = (e: PointerEvent) => {
-      // Create 8-12 sparks
-      const numSparks = Math.floor(Math.random() * 5) + 8;
-      const newSparks: Spark[] = [];
+      downX = e.clientX;
+      downY = e.clientY;
+      isDown = true;
+    };
 
-      for (let i = 0; i < numSparks; i++) {
-        newSparks.push({
-          id: sparkIdCounter++,
-          x: e.clientX,
-          y: e.clientY,
-          angle: Math.random() * Math.PI * 2,
-          velocity: Math.random() * 60 + 30, // 30 to 90 px distance
-          size: Math.random() * 3 + 2, // 2 to 5 px size
-        });
+    const handlePointerUp = (e: PointerEvent) => {
+      if (!isDown) return;
+      isDown = false;
+
+      const dx = e.clientX - downX;
+      const dy = e.clientY - downY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      if (dist < 8) {
+        // Create 8-10 sparks
+        const numSparks = Math.floor(Math.random() * 3) + 8;
+        const newSparks: Spark[] = [];
+
+        for (let i = 0; i < numSparks; i++) {
+          newSparks.push({
+            id: sparkIdCounter++,
+            x: e.clientX,
+            y: e.clientY,
+            angle: Math.random() * Math.PI * 2,
+            velocity: Math.random() * 60 + 30, // 30 to 90 px distance
+            size: Math.random() * 3 + 2, // 2 to 5 px size
+          });
+        }
+
+        setSparks((prev) => [...prev, ...newSparks]);
+
+        // Remove these sparks after animation completes
+        setTimeout(() => {
+          setSparks((prev) => prev.filter((s) => !newSparks.includes(s)));
+        }, 600); // slightly longer than animation duration
       }
-
-      setSparks((prev) => [...prev, ...newSparks]);
-
-      // Remove these sparks after animation completes
-      setTimeout(() => {
-        setSparks((prev) => prev.filter((s) => !newSparks.includes(s)));
-      }, 600); // slightly longer than animation duration
     };
 
     window.addEventListener("pointerdown", handlePointerDown);
-    return () => window.removeEventListener("pointerdown", handlePointerDown);
+    window.addEventListener("pointerup", handlePointerUp);
+    return () => {
+      window.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("pointerup", handlePointerUp);
+    };
   }, [reducedMotion]);
 
   if (reducedMotion) return null;

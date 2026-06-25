@@ -45,6 +45,11 @@ export function Row({
     currentAttemptChars &&
     currentAttemptChars.every((c) => c !== "");
 
+  const isVictory =
+    !isActive &&
+    evalsToUse.length === letras &&
+    evalsToUse.every((e) => e === "correct");
+
   // Dynamic grid cols based on letras
   const gridColsClass = letras === 11 ? "grid-cols-11" : "grid-cols-5";
   const gapClass =
@@ -68,6 +73,7 @@ export function Row({
           index={i}
           isRevealing={isRevealing}
           isCursor={isActive && cursorIndex === i}
+          isVictory={isVictory}
           onClick={isActive && onCellClick ? () => onCellClick(i) : undefined}
           compact={compact}
           letras={letras}
