@@ -67,12 +67,12 @@ export function Cell({
 
   return (
     <div
-      className="relative flex items-center justify-center w-full h-full min-h-0 min-w-0"
+      className="relative flex items-center justify-center w-full aspect-square min-h-0 min-w-0"
       aria-label={`Letra ${letter || "vazia"}, ${ariaLabels[state]}`}
       onClick={onClick}
     >
       {isCursor && <div className="cursor-aura" />}
-      <div className="relative aspect-square h-full max-h-full w-full max-w-full mx-auto overflow-hidden rounded">
+      <div className="relative h-full w-full mx-auto overflow-hidden rounded">
         <motion.div
           className={clsx(
             baseClasses,

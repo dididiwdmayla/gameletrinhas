@@ -204,7 +204,6 @@ export default function GamePage({
   return (
     <div
       className={`h-[100dvh] flex flex-col bg-bg-base overflow-hidden relative ${isErrorFlash ? "error-flash-overlay" : ""} ${game.wrongGuessShake ? "animate-shake" : ""}`}
-      onClick={handleContainerClick}
     >
       {/* Invisible input for native keyboard on mobile */}
       <input
@@ -435,11 +434,26 @@ export default function GamePage({
 
         <div className="w-full shrink-0 z-20 bg-bg-base pb-2 sm:pb-4">
           <Keyboard
-            onChar={game.handleChar}
-            onBackspace={game.handleBackspace}
-            onEnter={game.handleEnter}
-            onArrowLeft={game.handleArrowLeft}
-            onArrowRight={game.handleArrowRight}
+            onChar={(key) => {
+              inputRef.current?.blur();
+              game.handleChar(key);
+            }}
+            onBackspace={() => {
+              inputRef.current?.blur();
+              game.handleBackspace();
+            }}
+            onEnter={() => {
+              inputRef.current?.blur();
+              game.handleEnter();
+            }}
+            onArrowLeft={() => {
+              inputRef.current?.blur();
+              game.handleArrowLeft();
+            }}
+            onArrowRight={() => {
+              inputRef.current?.blur();
+              game.handleArrowRight();
+            }}
             keyStates={game.keyStates}
           />
         </div>
@@ -466,15 +480,23 @@ export default function GamePage({
                   </span>
                 ))}
               </div>
-              <button
-                onClick={() => {
-                  setShowUnicaIntro(true);
-                  game.restartGame();
-                }}
-                className="bg-text-primary text-bg-base font-bold py-3 px-8 rounded hover:opacity-90 transition-opacity"
-              >
-                TENTAR OUTRA
-              </button>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={() => {
+                    setShowUnicaIntro(true);
+                    game.restartGame();
+                  }}
+                  className="w-full bg-text-primary text-bg-base font-bold py-3 px-8 rounded hover:opacity-90 transition-opacity"
+                >
+                  TENTAR OUTRA
+                </button>
+                <button
+                  onClick={() => router.push("/")}
+                  className="w-full bg-bg-base border-2 border-text-muted/30 text-text-muted font-bold py-3 px-8 rounded hover:opacity-90 transition-opacity"
+                >
+                  VOLTAR AO MENU
+                </button>
+              </div>
             </div>
           ) : (
             <ResultBanner
@@ -482,7 +504,11 @@ export default function GamePage({
               mode={mode}
               score={0}
               answers={game.grids.map((g) => g.answer)}
-              onPlayAgain={game.restartGame}
+              onPlayAgain={() => {
+                countdown.reset();
+                game.restartGame();
+              }}
+              onMenu={() => router.push("/")}
             />
           )}
         </div>

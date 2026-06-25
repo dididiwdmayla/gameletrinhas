@@ -8,6 +8,7 @@ interface ResultBannerProps {
   answers: string[];
   score?: number;
   onPlayAgain: () => void;
+  onMenu: () => void;
 }
 
 export function ResultBanner({
@@ -16,6 +17,7 @@ export function ResultBanner({
   answers,
   score,
   onPlayAgain,
+  onMenu,
 }: ResultBannerProps) {
   const [nextDailyTime, setNextDailyTime] = useState("");
 
@@ -72,21 +74,35 @@ export function ResultBanner({
         </div>
 
         {mode === "diario" ? (
-          <div className="text-center w-full pt-4 border-t border-text-muted/30">
+          <div className="w-full text-center pt-4 border-t border-text-muted/30">
             <p className="text-sm font-bold text-text-muted">
               Próxima palavra em
             </p>
-            <p className="font-mono text-xl text-text-primary mt-1">
+            <p className="font-mono text-xl text-text-primary mt-1 mb-4">
               {nextDailyTime}
             </p>
+            <button
+              onClick={onMenu}
+              className="w-full bg-text-muted text-bg-base font-bold py-3 rounded hover:opacity-90 transition-opacity active:scale-95"
+            >
+              VOLTAR AO MENU
+            </button>
           </div>
         ) : (
-          <button
-            onClick={onPlayAgain}
-            className="w-full bg-accent text-bg-base font-bold py-3 rounded hover:opacity-90 transition-opacity active:scale-95"
-          >
-            JOGAR NOVAMENTE
-          </button>
+          <div className="w-full flex flex-col gap-2">
+            <button
+              onClick={onPlayAgain}
+              className="w-full bg-accent text-bg-base font-bold py-3 rounded hover:opacity-90 transition-opacity active:scale-95"
+            >
+              JOGAR NOVAMENTE
+            </button>
+            <button
+              onClick={onMenu}
+              className="w-full bg-bg-base border-2 border-text-muted/30 text-text-muted font-bold py-3 rounded hover:opacity-90 transition-opacity active:scale-95"
+            >
+              VOLTAR AO MENU
+            </button>
+          </div>
         )}
       </div>
     </motion.div>

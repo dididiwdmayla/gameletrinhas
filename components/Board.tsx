@@ -44,7 +44,6 @@ export function Board({
             : "bg-transparent",
       )}
       style={{
-        aspectRatio: boardAspectRatio,
         maxHeight: "100%",
       }}
     >

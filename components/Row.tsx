@@ -61,7 +61,7 @@ export function Row({
 
   return (
     <motion.div
-      className={`grid w-full flex-1 min-h-0 ${gridColsClass} ${gapClass} ${isWordComplete ? "word-complete" : ""}`}
+      className={`grid w-full ${gridColsClass} ${gapClass} ${isWordComplete ? "word-complete" : ""}`}
       animate={{ x: isInvalid ? [0, -5, 5, -5, 5, 0] : 0 }}
       transition={{ duration: 0.4 }}
     >
