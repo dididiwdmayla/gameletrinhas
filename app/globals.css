@@ -30,31 +30,25 @@
     text-muted: #7C8698 -> Secundário
   */
   :root {
-    --color-bg-base: #0b0e14;
-    --color-bg-surface: #131822;
-    --color-text-primary: #eceff4;
-    --color-text-muted: #7c8698;
+    --color-bg-base: #fffcf2;
+    --color-bg-surface: #ffffff;
+    --color-text-primary: #252422;
+    --color-text-muted: rgba(37, 36, 34, 0.6);
     --color-correct: #1e8e55;
-    --color-present: #c98a1b;
-    --color-absent: #232936;
-    --color-accent: #f5a623;
-    --color-accent-glow: #ffb638;
-    --bg-gradient-1: #0b0e14;
-    --bg-gradient-2: #0f131c;
+    --color-present: #eb5e28; /* Accent color for present? Or maybe a different orange */
+    --color-absent: #d4d2c8;
+    --color-accent: #eb5e28;
+    --color-accent-glow: rgba(235, 94, 40, 0.4);
+    --border-thick: 3px solid var(--color-text-primary);
   }
 
+  /* Remove old themes */
   [data-theme="dourado"] {
-    --color-accent: #ffd700;
-    --color-accent-glow: #fff070;
-    --bg-gradient-1: #11100b;
-    --bg-gradient-2: #1c1a11;
+    --color-accent: #eb5e28;
   }
 
   [data-theme="gasolina"] {
-    --color-accent: #00e5ff;
-    --color-accent-glow: #70efff;
-    --bg-gradient-1: #0a1317;
-    --bg-gradient-2: #0d1e24;
+    --color-accent: #eb5e28;
   }
 
   body {
@@ -62,46 +56,21 @@
     color: var(--color-text-primary);
   }
 
-  .animated-bg {
-    background: linear-gradient(
-      120deg,
-      var(--bg-gradient-1),
-      var(--bg-gradient-2),
-      var(--color-bg-base)
-    );
-    background-size: 200% 200%;
-    animation: gradient-shift 20s ease infinite;
-  }
-
-  .vignette {
+  /* Background Texture */
+  .bg-texture {
     position: fixed;
     inset: 0;
+    background-image: 
+        linear-gradient(var(--color-text-primary) 1px, transparent 1px),
+        linear-gradient(90deg, var(--color-text-primary) 1px, transparent 1px);
+    background-size: 60px 60px;
+    opacity: 0.03;
     pointer-events: none;
-    background: radial-gradient(
-      circle at center,
-      transparent 30%,
-      rgba(11, 14, 20, 0.85) 100%
-    );
-    z-index: 10;
+    z-index: 0;
   }
 
-  @keyframes gradient-shift {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .animated-bg {
-      animation: none;
-      background-position: 0% 50%;
-    }
+  .animated-bg {
+    /* removed animation */
   }
 
   .neon-halo {

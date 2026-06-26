@@ -32,7 +32,7 @@ export function Cell({
   if (letras === 11) textSizeClass = "text-sm sm:text-lg"; // smaller font for 11 letters
 
   const baseClasses = clsx(
-    "flex items-center justify-center w-full h-full font-mono font-bold rounded capitalize uppercase transition-colors duration-150 select-none",
+    "flex items-center justify-center w-full h-full font-mono font-bold capitalize uppercase transition-colors duration-150 select-none",
     onClick ? "cursor-pointer" : "cursor-default",
     textSizeClass,
     isCursor ? "cursor-glow" : "",
@@ -41,18 +41,18 @@ export function Cell({
   // State specific classes
   const stateClasses = {
     empty: clsx(
-      "border-2",
+      "border-[3px] shadow-[4px_4px_0_var(--color-text-primary)] bg-bg-surface",
       isFilled
-        ? "border-text-muted/50 text-text-primary"
-        : "border-[#3A3A3C]/50 text-transparent",
+        ? "border-text-primary text-text-primary"
+        : "border-text-primary text-transparent",
     ),
-    tabbed: "border-2 border-text-muted/50 text-text-primary", // same as empty filled
+    tabbed: "border-[3px] border-text-primary shadow-[4px_4px_0_var(--color-text-primary)] text-text-primary bg-bg-surface",
     correct:
-      "bg-correct text-text-primary border-2 border-transparent shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]",
+      "bg-correct text-bg-surface border-[3px] border-text-primary shadow-[4px_4px_0_var(--color-text-primary)]",
     present:
-      "bg-present text-text-primary border-2 border-transparent shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]",
+      "bg-present text-bg-surface border-[3px] border-text-primary shadow-[4px_4px_0_var(--color-text-primary)]",
     absent:
-      "bg-absent text-text-primary border-2 border-transparent shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]",
+      "bg-absent text-text-muted border-[3px] border-text-primary shadow-[4px_4px_0_var(--color-text-primary)]",
   };
 
   const isGuessed = state !== "empty" && state !== "tabbed";
@@ -72,7 +72,7 @@ export function Cell({
       onClick={onClick}
     >
       {isCursor && <div className="cursor-aura" />}
-      <div className="relative h-full w-full mx-auto overflow-hidden rounded">
+      <div className="relative h-full w-full mx-auto overflow-hidden">
         <motion.div
           className={clsx(
             baseClasses,

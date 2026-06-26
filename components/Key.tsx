@@ -12,7 +12,7 @@ export function Key({ char, states, onClick, isAction }: KeyProps) {
   const numStates = states.length || 1;
 
   const bgColors: Record<KeyState, string> = {
-    empty: "var(--color-text-muted)",
+    empty: "var(--color-bg-surface)",
     correct: "var(--color-correct)",
     present: "var(--color-present)",
     absent: "var(--color-absent)",
@@ -20,9 +20,9 @@ export function Key({ char, states, onClick, isAction }: KeyProps) {
 
   const textColors: Record<KeyState, string> = {
     empty: "var(--color-text-primary)",
-    correct: "var(--color-text-primary)",
-    present: "var(--color-text-primary)",
-    absent: "var(--color-text-primary)",
+    correct: "var(--color-bg-surface)",
+    present: "var(--color-bg-surface)",
+    absent: "var(--color-text-muted)",
   };
 
   // For multi-grid, if it's all absent or all empty, we can just use a solid color.
@@ -53,7 +53,7 @@ export function Key({ char, states, onClick, isAction }: KeyProps) {
     <button
       onClick={() => onClick(char)}
       className={clsx(
-        "flex items-center justify-center rounded uppercase font-body font-semibold text-sm sm:text-base select-none touch-manipulation transition-transform active:scale-95",
+        "flex items-center justify-center border-[3px] border-text-primary shadow-[4px_4px_0_var(--color-text-primary)] uppercase font-body font-bold text-sm sm:text-base select-none touch-manipulation transition-all hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-[6px_6px_0_var(--color-text-primary)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-[2px_2px_0_var(--color-text-primary)]",
         isAction ? "px-3 sm:px-4 text-xs sm:text-sm" : "flex-1",
       )}
       style={{

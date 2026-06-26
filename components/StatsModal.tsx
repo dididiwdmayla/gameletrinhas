@@ -32,7 +32,7 @@ export function StatsModal({ onClose, initialMode = "solo" }: StatsModalProps) {
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.2 }}
-        className="bg-bg-surface border border-absent shadow-2xl rounded-xl p-6 max-w-sm w-full relative"
+        className="bg-bg-surface border-[3px] border-text-primary shadow-[10px_10px_0_var(--color-text-primary)] p-6 max-w-sm w-full relative"
       >
         <button
           onClick={onClose}
@@ -66,10 +66,10 @@ export function StatsModal({ onClose, initialMode = "solo" }: StatsModalProps) {
               <button
                 key={mode}
                 onClick={() => setSelectedMode(mode)}
-                className={`px-3 py-1 rounded-full text-sm font-semibold whitespace-nowrap ${
+                className={`px-3 py-1 font-bold whitespace-nowrap border-[3px] shadow-[2px_2px_0_var(--color-text-primary)] transition-all hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none ${
                   selectedMode === mode
-                    ? "bg-accent text-bg-base"
-                    : "bg-transparent border border-text-muted text-text-muted"
+                    ? "bg-accent text-bg-surface border-text-primary"
+                    : "bg-bg-surface border-text-primary text-text-primary"
                 }`}
               >
                 {MODE_CONFIG[mode].label}
@@ -104,10 +104,10 @@ export function StatsModal({ onClose, initialMode = "solo" }: StatsModalProps) {
             return (
               <div key={num} className="flex items-center gap-2">
                 <span className="w-4 text-right text-sm">{num}</span>
-                <div className="flex-1 bg-[var(--color-bg-base)] h-5 rounded overflow-hidden">
+                <div className="flex-1 bg-bg-base h-6 border-[2px] border-text-primary overflow-hidden shadow-[2px_2px_0_var(--color-text-primary)]">
                   <div
-                    className={`h-full flex items-center justify-end px-2 text-xs font-bold text-text-primary
-                      ${count > 0 ? "bg-correct" : "bg-transparent text-text-muted"}`}
+                    className={`h-full flex items-center justify-end px-2 text-xs font-bold
+                      ${count > 0 ? "bg-correct text-bg-surface" : "bg-transparent text-text-muted"}`}
                     style={{ width: count > 0 ? `${Math.max(8, pct)}%` : "0%" }}
                   >
                     {count > 0 ? count : ""}

@@ -11,12 +11,15 @@ interface Ripple {
 
 export function SparksEffect() {
   const [ripples, setRipples] = useState<Ripple[]>([]);
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(() => {
+    if (typeof window !== "undefined") {
+      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    }
+    return false;
+  });
 
   useEffect(() => {
     const mediaQuery = window.matchMedia?.("(prefers-reduced-motion: reduce)");
-    setReducedMotion(mediaQuery?.matches ?? false);
-
     const listener = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
     mediaQuery?.addEventListener?.("change", listener);
     return () => mediaQuery?.removeEventListener?.("change", listener);

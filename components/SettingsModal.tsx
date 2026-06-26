@@ -50,7 +50,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.2 }}
-        className="bg-bg-surface p-6 sm:p-8 rounded-xl w-full max-w-md border border-absent shadow-2xl"
+        className="bg-bg-surface p-6 sm:p-8 max-w-md w-full border-[3px] border-text-primary shadow-[10px_10px_0_var(--color-text-primary)]"
       >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-display font-bold">Estúdio</h2>
@@ -85,7 +85,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
                   key={t}
                   onClick={() => handleSelectTheme(t)}
                   disabled={!isUnlocked}
-                  className={`p-3 rounded-lg border-2 text-left transition-colors font-bold flex justify-between items-center ${isSelected ? "border-accent bg-accent/10 text-accent" : isUnlocked ? "border-bg-base hover:border-text-muted text-text-primary" : "border-bg-base text-text-muted/50 cursor-not-allowed"}`}
+                  className={`p-3 border-[3px] text-left transition-all font-bold flex justify-between items-center shadow-[2px_2px_0_var(--color-text-primary)] ${isSelected ? "border-text-primary bg-accent text-bg-surface" : isUnlocked ? "border-text-primary bg-bg-base hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-[4px_4px_0_var(--color-text-primary)] text-text-primary" : "border-text-muted bg-bg-base text-text-muted/50 cursor-not-allowed"}`}
                 >
                   <span>{themeLabels[t]}</span>
                   {!isUnlocked && (
@@ -118,7 +118,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
 
         <button
           onClick={onClose}
-          className="w-full py-3 bg-absent hover:bg-absent/80 text-text-primary rounded font-bold transition-colors"
+          className="w-full py-3 bg-bg-surface border-[3px] border-text-primary text-text-primary shadow-[4px_4px_0_var(--color-text-primary)] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-[2px_2px_0_var(--color-text-primary)] active:translate-y-1 active:translate-x-1 active:shadow-none font-bold transition-all uppercase"
         >
           FECHAR
         </button>

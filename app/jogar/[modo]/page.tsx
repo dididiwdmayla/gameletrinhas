@@ -61,49 +61,62 @@ export default function GamePage({
   }, [isTimerEnabled, countdown.expired, game.status, game]);
 
   // Unica intro and wins
-  const [unicaWins, setUnicaWins] = useState(0);
-  const [showUnicaIntro, setShowUnicaIntro] = useState(false);
-  const [hideUnicaWarning, setHideUnicaWarning] = useState(false);
-  const [unicaCooldownMs, setUnicaCooldownMs] = useState(0);
-
-  useEffect(() => {
-    if (mode === "unica") {
-      let wins = 0;
-      try {
-        wins = parseInt(localStorage.getItem("pentagono:unica:wins") || "0", 10);
-      } catch (e) {}
-      setUnicaWins(wins);
-
-      let hideWarning = false;
-      try {
-        hideWarning = localStorage.getItem("letrinha:unica:hideWarning") === "true";
-      } catch (e) {}
-      setHideUnicaWarning(hideWarning);
-
-      // Check cooldown
+  const [unicaWins, setUnicaWins] = useState(() => {
+    if (typeof window !== "undefined") {
+      return parseInt(localStorage.getItem("pentagono:unica:wins") || "0", 10);
+    }
+    return 0;
+  });
+  const [unicaCooldownMs, setUnicaCooldownMs] = useState(() => {
+    if (typeof window !== "undefined" && mode === "unica") {
       let lastAttempt = null;
       let backupAttempt = null;
       try {
         lastAttempt = localStorage.getItem("letrinha:unica:lastAttempt");
         backupAttempt = localStorage.getItem("letrinha:unica:backupAttempt");
       } catch (e) {}
-
       if (lastAttempt || backupAttempt) {
-        // if either exists, consider it active
         const timestamp = parseInt(lastAttempt || backupAttempt || "0", 10);
         const elapsed = Date.now() - timestamp;
-        const cooldownMs = 60 * 60 * 1000; // 1 hour
+        const cooldownMs = 60 * 60 * 1000;
         if (elapsed < cooldownMs) {
-          setUnicaCooldownMs(cooldownMs - elapsed);
-          // start local interval to count down
-        } else if (!hideWarning) {
-          setShowUnicaIntro(true);
+          return cooldownMs - elapsed;
         }
-      } else if (!hideWarning) {
-        setShowUnicaIntro(true);
       }
     }
-  }, [mode]);
+    return 0;
+  });
+
+  const [showUnicaIntro, setShowUnicaIntro] = useState(() => {
+    if (typeof window !== "undefined" && mode === "unica") {
+      const isHidden = localStorage.getItem("letrinha:unica:hideWarning") === "true";
+      if (!isHidden) {
+        let lastAttempt = null;
+        let backupAttempt = null;
+        try {
+          lastAttempt = localStorage.getItem("letrinha:unica:lastAttempt");
+          backupAttempt = localStorage.getItem("letrinha:unica:backupAttempt");
+        } catch (e) {}
+        if (lastAttempt || backupAttempt) {
+          const timestamp = parseInt(lastAttempt || backupAttempt || "0", 10);
+          const elapsed = Date.now() - timestamp;
+          if (elapsed >= 60 * 60 * 1000) return true;
+        } else {
+          return true;
+        }
+      }
+    }
+    return false;
+  });
+
+  const [hideUnicaWarning, setHideUnicaWarning] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("letrinha:unica:hideWarning") === "true";
+    }
+    return false;
+  });
+
+  // Keep only timer interval effect for unicaCooldownMs
 
   useEffect(() => {
     if (unicaCooldownMs > 0) {
@@ -232,11 +245,11 @@ export default function GamePage({
 
       {showUnicaIntro && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-bg-base/90 p-4">
-          <div className="bg-bg-surface p-8 rounded-xl max-w-sm text-center border-2 border-accent">
+          <div className="bg-bg-surface p-8 max-w-sm text-center border-[3px] border-text-primary shadow-[10px_10px_0_var(--color-text-primary)]">
             <h2 className="text-3xl font-display font-black text-accent mb-4">
               ÚNICA
             </h2>
-            <p className="text-text-primary mb-6">
+            <p className="text-text-primary mb-6 font-semibold">
               Ninguém acerta de primeira. Mas e se hoje for você? É 1 tentativa.
               1 palavra de 5 letras sorteada do zero, sem dicas prévias.
             </p>
@@ -245,7 +258,7 @@ export default function GamePage({
                 Você já fez o impossível {unicaWins} vez(es)!
               </p>
             )}
-            <div className="flex items-center justify-center gap-2 mb-6 text-sm text-text-muted">
+            <div className="flex items-center justify-center gap-2 mb-6 text-sm text-text-muted font-mono font-bold">
               <input
                 type="checkbox"
                 id="hideWarningCheckbox"
@@ -260,7 +273,7 @@ export default function GamePage({
                     );
                   } catch (err) {}
                 }}
-                className="w-4 h-4 accent-accent"
+                className="w-4 h-4 accent-accent border-[2px] border-text-primary"
               />
               <label htmlFor="hideWarningCheckbox">
                 Não mostrar este aviso novamente
@@ -268,7 +281,7 @@ export default function GamePage({
             </div>
             <button
               onClick={() => setShowUnicaIntro(false)}
-              className="bg-accent text-bg-base font-bold py-2 px-6 rounded hover:opacity-90 transition-opacity"
+              className="bg-accent text-bg-surface border-[3px] border-text-primary font-bold py-2 px-6 shadow-[4px_4px_0_var(--color-text-primary)] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-[2px_2px_0_var(--color-text-primary)] transition-all active:translate-y-1 active:translate-x-1 active:shadow-none w-full"
             >
               ACEITO O DESAFIO
             </button>
@@ -277,7 +290,7 @@ export default function GamePage({
       )}
 
       <header
-        className={`w-full ${headerHeightClass} border-b border-absent flex items-center px-4 justify-between shrink-0 relative z-10`}
+        className={`w-full ${headerHeightClass} border-b-[3px] border-text-primary bg-bg-base flex items-center px-4 justify-between shrink-0 relative z-10`}
       >
         <button
           onClick={() => router.push("/")}
@@ -385,17 +398,17 @@ export default function GamePage({
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-bg-surface p-6 rounded-xl max-w-sm w-full border border-absent shadow-2xl"
+            className="bg-bg-surface p-6 max-w-sm w-full border-[3px] border-text-primary shadow-[10px_10px_0_var(--color-text-primary)]"
           >
             <h2 className="text-xl font-bold mb-3">Reiniciar Partida?</h2>
             <p className="text-text-muted mb-6">
               A palavra atual será trocada por uma nova e o progresso da partida
               será perdido. Tem certeza?
             </p>
-            <div className="flex gap-3 justify-end">
+            <div className="flex gap-3 justify-end mt-4">
               <button
                 onClick={() => setShowRestartConfirm(false)}
-                className="px-4 py-2 text-text-muted hover:text-text-primary transition-colors font-bold"
+                className="px-4 py-2 border-[3px] border-text-primary bg-bg-surface shadow-[4px_4px_0_var(--color-text-primary)] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-[2px_2px_0_var(--color-text-primary)] transition-all font-bold"
               >
                 CANCELAR
               </button>
@@ -405,7 +418,7 @@ export default function GamePage({
                   game.restartGame();
                   if (isTimerEnabled) countdown.reset();
                 }}
-                className="px-4 py-2 bg-accent text-bg-base rounded font-bold hover:opacity-90 transition-opacity"
+                className="px-4 py-2 border-[3px] border-text-primary bg-accent text-bg-surface shadow-[4px_4px_0_var(--color-text-primary)] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-[2px_2px_0_var(--color-text-primary)] transition-all font-bold"
               >
                 REINICIAR
               </button>
@@ -462,7 +475,7 @@ export default function GamePage({
       {isFinished && (
         <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-bg-base/80 backdrop-blur-sm">
           {mode === "unica" ? (
-            <div className="bg-bg-surface p-8 rounded-xl max-w-sm text-center border-2 border-text-muted">
+            <div className="bg-bg-surface p-8 max-w-sm text-center border-[3px] border-text-primary shadow-[10px_10px_0_var(--color-text-primary)]">
               <h2
                 className={`text-4xl font-display font-black mb-4 ${game.status === "won" ? "text-correct" : "text-accent"}`}
               >
@@ -474,25 +487,25 @@ export default function GamePage({
                 {game.grids[0].answer.split("").map((char, i) => (
                   <span
                     key={i}
-                    className="bg-bg-base w-10 h-10 flex items-center justify-center rounded font-bold text-xl uppercase border border-absent"
+                    className="bg-bg-base w-10 h-10 flex items-center justify-center font-bold text-xl uppercase border-[3px] border-text-primary shadow-[2px_2px_0_var(--color-text-primary)]"
                   >
                     {char}
                   </span>
                 ))}
               </div>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-3">
                 <button
                   onClick={() => {
                     setShowUnicaIntro(true);
                     game.restartGame();
                   }}
-                  className="w-full bg-text-primary text-bg-base font-bold py-3 px-8 rounded hover:opacity-90 transition-opacity"
+                  className="w-full bg-text-primary text-bg-base font-bold py-3 px-8 shadow-[4px_4px_0_var(--color-accent)] border-[3px] border-text-primary hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-[2px_2px_0_var(--color-accent)] active:translate-y-1 active:translate-x-1 active:shadow-none transition-all"
                 >
                   TENTAR OUTRA
                 </button>
                 <button
                   onClick={() => router.push("/")}
-                  className="w-full bg-bg-base border-2 border-text-muted/30 text-text-muted font-bold py-3 px-8 rounded hover:opacity-90 transition-opacity"
+                  className="w-full bg-bg-surface border-[3px] border-text-primary text-text-primary font-bold py-3 px-8 shadow-[4px_4px_0_var(--color-text-primary)] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-[2px_2px_0_var(--color-text-primary)] active:translate-y-1 active:translate-x-1 active:shadow-none transition-all"
                 >
                   VOLTAR AO MENU
                 </button>
