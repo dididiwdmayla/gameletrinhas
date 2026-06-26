@@ -42,13 +42,15 @@
     --border-thick: 3px solid var(--color-text-primary);
   }
 
-  /* Remove old themes */
+  /* Removed old themes */
   [data-theme="dourado"] {
-    --color-accent: #eb5e28;
+    --color-accent: #b37300;
+    --color-accent-glow: rgba(179, 115, 0, 0.4);
   }
 
   [data-theme="gasolina"] {
-    --color-accent: #eb5e28;
+    --color-accent: #00686f;
+    --color-accent-glow: rgba(0, 104, 111, 0.4);
   }
 
   body {
